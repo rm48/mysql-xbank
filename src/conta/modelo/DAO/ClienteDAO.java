@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import conta.modelo.beans.Cliente;
+import conta.util.Conexao;
 import conta.util.ConexaoBD;
 
 public class ClienteDAO {
@@ -16,7 +17,7 @@ public class ClienteDAO {
 	ResultSet rs;
 	
 	public ClienteDAO() {
-		this.con = new ConexaoBD().getConexao();
+		this.con = Conexao.getConexao();
 	}
 	
 	public void incluir(Cliente cliente) {

@@ -39,15 +39,15 @@ public class Teste {
 		System.out.println("Excluído.");	
 		*/
 		
-		/* LISTAR 
+		/* LISTAR */
 		ClienteDAO dao2 = new ClienteDAO();
 		List<Cliente> lst = dao2.listar();
-		System.out.println("Id  Cliente\t\t  Saldo");
+//		System.out.println("Id  Cliente\t\t  Saldo");
 		for(Cliente cliente : lst) {		
-			System.out.println(cliente.getId()+" | "+cliente.getNome()+ "\t| "+cliente.getSaldo());
-//			System.out.println(cliente);
+//			System.out.println(cliente.getId()+" | "+cliente.getNome()+ "\t| "+cliente.getSaldo());
+			System.out.println(cliente);
 		}
-		*/
+		
 		
 		/*	PESQUISAR ID
 		Cliente c = new Cliente();
@@ -56,11 +56,12 @@ public class Teste {
 		System.out.println(c.getId()+" | "+c.getNome()+ " | "+c.getSaldo())
 		 */
 		
-		/*	PESQUISAR NOME */
+		/*	PESQUISAR NOME 
 		ClienteDAO dao2 = new ClienteDAO();
-		List<Cliente> lst = dao2.pesquisarPorNome("z");
+		List<Cliente> lst = dao2.pesquisarPorNome("pa");
 		for(Cliente c : lst) {
 			System.out.println(c.getId()+" | "+c.getNome()+ " | "+c.getSaldo());
 		}
+		*/
 	}
 }
