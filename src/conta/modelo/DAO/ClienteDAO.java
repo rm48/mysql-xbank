@@ -90,4 +90,56 @@ public class ClienteDAO {
 		}
 		return lst;		
 	}
+	
+	public Cliente PesquisarPorId(int id) {
+		Cliente cliente = new Cliente();
+		
+		try {
+			stmt = con.prepareStatement("SELECT * FROM cliente WHERE id_cliente = ?",
+			ResultSet.TYPE_SCROLL_INSENSITIVE, 
+            ResultSet.CONCUR_UPDATABLE);
+			stmt.setInt(1, id);
+			rs = stmt.executeQuery();
+			rs.first();
+
+			cliente.setId(rs.getInt(1));
+			cliente.setNome(rs.getString(2));
+			cliente.setSaldo(rs.getString(3));
+			cliente.setCredito(rs.getString(4));
+			cliente.setSenha(rs.getString(5));
+			
+			stmt.close();
+			rs.close();
+			con.close();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return cliente;
+	}
+	
+	public List<Cliente> pesquisarPorNome(String valor) {
+		List<Cliente> lst = new ArrayList<Cliente>();
+
+		try {
+			stmt = con.prepareStatement("SELECT * FROM cliente WHERE nome LIKE ?");
+			stmt.setString(1, '%' + valor + '%');
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				Cliente cliente = new Cliente();
+				cliente.setId(rs.getInt(1));
+				cliente.setNome(rs.getString(2));
+				cliente.setSaldo(rs.getString(3));
+				cliente.setCredito(rs.getString(4));
+				cliente.setSenha(rs.getString(5));
+				lst.add(cliente);
+			}
+			stmt.close();
+			rs.close();
+			con.close();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return lst;
+	}
 }

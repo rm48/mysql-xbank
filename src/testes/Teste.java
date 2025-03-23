@@ -19,7 +19,7 @@ public class Teste {
 		System.out.println("Incluído.");
 		*/
 		
-		/* ALTERAR */
+		/* ALTERAR 
 		Cliente c = new Cliente();
 		c.setId(5);	
 		c.setNome("Milo Maracutaia");
@@ -29,7 +29,7 @@ public class Teste {
 		ClienteDAO dao = new ClienteDAO();
 		dao.alterar(c);	
 		System.out.println("Alterado.");
-		
+		*/
 		
 		/* EXCLUIR 
 		Cliente c = new Cliente();
@@ -39,6 +39,7 @@ public class Teste {
 		System.out.println("Excluído.");	
 		*/
 		
+		/* LISTAR 
 		ClienteDAO dao2 = new ClienteDAO();
 		List<Cliente> lst = dao2.listar();
 		System.out.println("Id  Cliente\t\t  Saldo");
@@ -46,6 +47,20 @@ public class Teste {
 			System.out.println(cliente.getId()+" | "+cliente.getNome()+ "\t| "+cliente.getSaldo());
 //			System.out.println(cliente);
 		}
+		*/
 		
+		/*	PESQUISAR ID
+		Cliente c = new Cliente();
+		ClienteDAO dao2 = new ClienteDAO();
+		c = dao2.PesquisarPorId(2);
+		System.out.println(c.getId()+" | "+c.getNome()+ " | "+c.getSaldo())
+		 */
+		
+		/*	PESQUISAR NOME */
+		ClienteDAO dao2 = new ClienteDAO();
+		List<Cliente> lst = dao2.pesquisarPorNome("z");
+		for(Cliente c : lst) {
+			System.out.println(c.getId()+" | "+c.getNome()+ " | "+c.getSaldo());
+		}
 	}
 }
