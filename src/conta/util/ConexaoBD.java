@@ -11,14 +11,14 @@ public class ConexaoBD {
 	public static Connection getConexao() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			conexao = DriverManager.getConnection("jdbc:mysql://localhost/siscliente?useTimezone=true&serverTimezone=UTC", "admin", "12345");
+			conexao = DriverManager.getConnection("jdbc:mysql://localhost/sisbank?useTimezone=true&serverTimezone=UTC", "admin", "12345");
 		} catch (ClassNotFoundException | SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return conexao;		
 	}
-	public static void main(String[] args ) {
-		new ConexaoBD().getConexao();
-		JOptionPane.showMessageDialog(null, "Conectado");	
-	}
+//	public static void main(String[] args ) {
+//		new ConexaoBD().getConexao();
+//		JOptionPane.showMessageDialog(null, "Conectado");	
+//	}
 }
