@@ -132,7 +132,7 @@ public class ClienteDAO {
 				cliente.setNome(rs.getString(2));
 				cliente.setSaldo(rs.getString(3));
 				cliente.setCredito(rs.getString(4));
-				cliente.setSenha(rs.getString(5));
+				cliente.setSaldo(rs.getString(3));
 				lst.add(cliente);
 			}
 			stmt.close();
@@ -143,4 +143,14 @@ public class ClienteDAO {
 		}
 		return lst;
 	}
+	public ResultSet carregarGrade() {
+		try {
+			stmt = con.prepareStatement("SELECT id_cliente, nome FROM cliente");
+			rs = stmt.executeQuery();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return rs;
+	}
 }
+
