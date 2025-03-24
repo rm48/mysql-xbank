@@ -3,13 +3,13 @@ package conta.modelo.DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import conta.modelo.beans.Cliente;
 import conta.util.Conexao;
-import conta.util.ConexaoBD;
 
 public class ClienteDAO {
 	private Connection con;
@@ -146,6 +146,31 @@ public class ClienteDAO {
 	public ResultSet carregarGrade() {
 		try {
 			stmt = con.prepareStatement("SELECT id_cliente, nome FROM cliente");
+			rs = stmt.executeQuery();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return rs;
+	}
+	
+	public List<String> nomeCampos(){
+		List<String> campos = new ArrayList<>();
+		try {
+			stmt = con.prepareStatement("SELECT * FROM cliente LIMIT 1");
+			rs = stmt.executeQuery();
+			ResultSetMetaData rsmd = rs.getMetaData();
+			for(int i=1; i<=2; i++)//rsmd.getColumnCount(); i++)
+				campos.add(rsmd.getColumnName(i));			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return campos;	
+	}
+
+	public ResultSet pesquisa(String campo, String valor) {
+		String sql = "SELECT id_cliente, nome FROM cliente WHERE " + campo + " like '%" + valor + "%' ";
+		try {
+			stmt = con.prepareStatement(sql);
 			rs = stmt.executeQuery();
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

@@ -7,8 +7,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.ResultSet;
+import java.util.List;
 import java.awt.Color;
+import java.awt.Cursor;
+
 import javax.swing.JTextField;
 
 import conta.modelo.DAO.ClienteDAO;
@@ -18,6 +23,8 @@ import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JLabel;
 import java.awt.Font;
+
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 
 public class FrmLista extends JFrame {
@@ -26,16 +33,9 @@ public class FrmLista extends JFrame {
 	
 	private JTable table;
 	private JPanel pnTabela;
-	private JComboBox cbCampos;
+	private JComboBox cbCampo;
 	private JTextField txtValor;
 
-	String [] colunas = {"id", "Nome", "Saldo", "Credito"};
-	
-	Object [][] dados = {
-			{"1","Julio","976675","100000"},
-			{"2","Elias","88955","200000"},
-			{"3","Jairo","23930","150000"},
-	};
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -59,13 +59,11 @@ public class FrmLista extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public FrmLista() {
 		janela();
 		tabela();
 		atualizarGrade();
+		populaCombo();
 	}
 	public void janela() {
 		setTitle("Lista de clientes");
@@ -84,10 +82,10 @@ public class FrmLista extends JFrame {
 		panel.add(txtValor);
 		txtValor.setColumns(10);
 		
-		cbCampos = new JComboBox();
-		cbCampos.setBounds(30, 28, 144, 24);
-		cbCampos.setFont(new Font("Liberation Sans", Font.PLAIN, 15));
-		panel.add(cbCampos);
+		cbCampo = new JComboBox();
+		cbCampo.setBounds(30, 28, 144, 24);
+		cbCampo.setFont(new Font("Liberation Sans", Font.PLAIN, 15));
+		panel.add(cbCampo);
 		
 		JLabel lblCampo = new JLabel("Campo");
 		lblCampo.setForeground(Color.WHITE);
@@ -102,6 +100,13 @@ public class FrmLista extends JFrame {
 		panel.add(lblValor);
 		
 		JButton btnPesquisar = new JButton("Pesquisar");
+		btnPesquisar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pesquisa(""+cbCampo.getSelectedItem(), txtValor.getText());				
+			}
+			});
+			
 		btnPesquisar.setFont(new Font("Liberation Sans", Font.PLAIN, 15));
 		btnPesquisar.setBounds(445, 27, 105, 27);
 		panel.add(btnPesquisar);
@@ -124,7 +129,10 @@ public class FrmLista extends JFrame {
 	}
 	public void tabela(){
 			table = new JTable(new ModeloGrade());
-//			table = new JTable(dados, colunas);
+			//table.setForeground(Color.BLUE);
+			table.setFont(new Font("Liberation Sans", Font.PLAIN, 15));
+			table.setToolTipText("Clique em uma linha para selecionar");
+			table.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			JScrollPane rolagem = new JScrollPane(table);
 			pnTabela.add(rolagem);
 	}
@@ -132,5 +140,17 @@ public class FrmLista extends JFrame {
 		ResultSet rs = new ClienteDAO().carregarGrade();
 		table.setModel(new ModeloGrade(rs, new String[] {"Código","Nome"}));
 		table.getColumnModel().getColumn(0).setMaxWidth(60);
+	}
+	public void populaCombo() {
+		List<String> campos = new ClienteDAO().nomeCampos();
+		DefaultComboBoxModel dcm = (DefaultComboBoxModel) cbCampo.getModel();
+		for (String campo: campos)
+			dcm.addElement(campo);
+	}
+	
+	public void pesquisa(String campo, String valor) {
+		ResultSet rs = new ClienteDAO().pesquisa(campo, valor);
+		table.setModel(new ModeloGrade(rs, new String[] {"Código","Nome"}));
+		table.getColumnModel().getColumn(0).setMaxWidth(50);
 	}
 }

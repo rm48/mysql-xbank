@@ -1,5 +1,5 @@
 bin
-src/conta/util/configuracao.properties
+./src/conta/util/configuracao.properties
 .settings
 .classpath
 .project
