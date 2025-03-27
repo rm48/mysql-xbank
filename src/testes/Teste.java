@@ -8,16 +8,16 @@ import conta.modelo.beans.Cliente;
 public class Teste {
 	public static void main(String[] args) {
 		
-		/* INCLUIR 
+		/* INCLUIR */
 		Cliente c = new Cliente();
-		c.setNome("Jorge Scarola");
+		c.setNome("Buiu Sebastião");
 		c.setSenha("1234");
-		c.setSaldo("-1000");
-		c.setCredito("750000");	
+		c.setSaldo("00");
+		c.setCredito("2978");	
 		ClienteDAO dao = new ClienteDAO();
 		dao.incluir(c);
 		System.out.println("Incluído.");
-		*/
+		
 		
 		/* ALTERAR 
 		Cliente c = new Cliente();

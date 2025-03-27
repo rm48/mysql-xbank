@@ -3,6 +3,10 @@ package conta.apresentacao;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -10,30 +14,45 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.text.MaskFormatter;
 
+import conta.modelo.DAO.ClienteDAO;
+import conta.modelo.beans.Cliente;
 import conta.util.LimitaCaracteres;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class ContaCliente extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField tfNome;
-	
+	private JTextField tfNome;	
 	private JTextField tfConta;
 	private JTextField tfSenha;
 	private JTextField tfValor;
-	private MaskFormatter fmtSenha;
-	private MaskFormatter fmtValor;
+	
+	private JButton btnSignup;
+	private JButton btnLogin;
+	private JButton btnExcluir; 
+	private JButton btnTransferir;
+	private JButton btnSacar;
+	private JButton btnDepositar;
+	private JButton btnLogout ;
+	private JButton btnSaldo;
+	
+	private JComboBox comboBox;
+	
+	Cliente cliente;
+	ClienteDAO dao;
+	Random bonus = new Random();
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -57,20 +76,51 @@ public class ContaCliente extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
+
 	public ContaCliente() {
+		
 		Janela();
 		tfNome.setDocument(new LimitaCaracteres(30, LimitaCaracteres.TipoEntrada.NOME));
 		tfConta.setDocument(new LimitaCaracteres(3, LimitaCaracteres.TipoEntrada.NUMEROINTEIRO));
+//		tfConta.setEnabled(false);
 		tfSenha.setDocument(new LimitaCaracteres(4, LimitaCaracteres.TipoEntrada.NUMEROINTEIRO));
+//		tfSenha.setEnabled(false);
 		tfValor.setDocument(new LimitaCaracteres(5, LimitaCaracteres.TipoEntrada.NUMERODECIMAL));
+//		tfValor.setEnabled(false);
 		
+		btnLogin.setEnabled(false);
+		btnExcluir.setEnabled(false);
+		btnTransferir.setEnabled(false);
+		btnSacar.setEnabled(false);
+		btnDepositar.setEnabled(false);
+		btnLogout.setEnabled(false);
+		btnSaldo.setEnabled(false);
+//		btnSignup.setEnabled(false);
+		
+		popularComboBox();
 	}
 	
+public ContaCliente(int id, int linha) {
+		
+		Janela();
+		tfNome.setDocument(new LimitaCaracteres(30, LimitaCaracteres.TipoEntrada.NOME));
+		//tfConta.setText(Integer.toString(id));
+		//tfConta.setText(""+id);
+		tfSenha.setDocument(new LimitaCaracteres(4, LimitaCaracteres.TipoEntrada.NUMEROINTEIRO));
+		tfValor.setDocument(new LimitaCaracteres(5, LimitaCaracteres.TipoEntrada.NUMERODECIMAL));
+		btnSignup.setEnabled(false);
+		//mostrarDados(id);
+		popularComboBox();
+		comboBox.setSelectedIndex(linha);
+		btnTransferir.setEnabled(false);
+		btnSacar.setEnabled(false);
+	
+		btnLogout.setEnabled(false);
+		btnSaldo.setEnabled(false);
+}
+	
 	public void Janela() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 469, 438);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -118,25 +168,19 @@ public class ContaCliente extends JFrame {
 		panel.add(lbValorT);
 		
 		tfNome = new JTextField();
-		tfNome.setText(",00");
 		tfNome.setFont(fonte);
 		tfNome.setBounds(75, 10, 233, 32);
 		panel.add(tfNome);
 		tfNome.setColumns(10);
+		tfNome.addActionListener(new tfNomeListener());
 		
 		tfConta = new JTextField();
 		tfConta.setFont(fonte);
 		tfConta.setBounds(75, 52, 58, 25);
 		panel.add(tfConta);
-		tfConta.setColumns(10);	
-		
-//		try {
-//			fmtSenha = new MaskFormatter("####");
-//			fmtValor = new MaskFormatter("###,###.##");
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
-		
+		tfConta.setColumns(10);
+		tfConta.setEditable(false);
+				
 		tfSenha = new JTextField();
 		tfSenha.setFont(fonte);
 		tfSenha.setColumns(10);
@@ -149,56 +193,187 @@ public class ContaCliente extends JFrame {
 		tfValor.setBounds(74, 137, 96, 24);
 		panel.add(tfValor);
 		
-		JButton btnLogin = new JButton("Acessar");
+		btnLogin = new JButton("Acessar");
 		btnLogin.setFont(fonte);
 		btnLogin.setBounds(333, 12, 100, 24);
 		panel.add(btnLogin);
 		
-		JButton btnSignin = new JButton("Cadastrar");
-		btnSignin.setFont(fonte);
-		btnSignin.setBounds(333, 54, 100, 24);
-		panel.add(btnSignin);
+		btnSignup = new JButton("Cadastrar");
+		btnSignup.setFont(fonte);
+		btnSignup.setBounds(333, 54, 100, 24);
+		panel.add(btnSignup);
+		btnSignup.addActionListener(new btnSignupListener());
 		
-		JButton btnExcluir = new JButton("Excluir");
+		
+		btnExcluir = new JButton("Excluir");
 		btnExcluir.setFont(fonte);
 		btnExcluir.setBounds(333, 103, 100, 24);
-		panel.add(btnExcluir);		
+		panel.add(btnExcluir);	
+		btnExcluir.addActionListener(new btnExcluirListener());
 		
-		JButton btnTransferir = new JButton("Transferir");
+		btnTransferir = new JButton("Transferir");
 		btnTransferir.setFont(fonte);
 		btnTransferir.setBounds(198, 138, 110, 24);
 		panel.add(btnTransferir);
 		
-		JButton btnSacar = new JButton("Sacar");
+		btnSacar = new JButton("Sacar");
 		btnSacar.setFont(fonte);
 		btnSacar.setBounds(74, 174, 96, 24);
 		panel.add(btnSacar);
 		
-		JButton btnDepositar = new JButton("Depositar");
+		btnDepositar = new JButton("Depositar");
 		btnDepositar.setFont(fonte);
 		btnDepositar.setBounds(198, 174, 110, 24);
 		panel.add(btnDepositar);
 		
-		JButton btnLogout = new JButton("Sair");
+		btnLogout = new JButton("Sair");
 		btnLogout.setFont(fonte);
 		btnLogout.setBounds(334, 139, 99, 24);
 		panel.add(btnLogout);
 		
-		JButton btnSaldo = new JButton("Saldo");
+		btnSaldo = new JButton("Saldo");
 		btnSaldo.setFont(fonte);
 		btnSaldo.setBounds(333, 175, 100, 24);
 		panel.add(btnSaldo);
 		
-		JComboBox comboBox = new JComboBox();
+		comboBox = new JComboBox();
 		comboBox.setFont(fonte);
 		comboBox.setBounds(75, 100, 233, 26);
 		panel.add(comboBox);
+		comboBox.addActionListener(new comboBoxListener());
+		
+		
 		
 		JTextArea textArea = new JTextArea();
 		textArea.setFont(fonte);
 		textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		textArea.setEditable(false);
 		textArea.setBounds(12, 210, 421, 91);
-		panel.add(textArea);	
+		panel.add(textArea);
+		textArea.setText("Cash: "+ FrmLista.getCash() );
+				
 	}
+	
+	public class tfNomeListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			btnSignup.setEnabled(true);
+			tfSenha.setEnabled(true);
+		}
+		
+	}
+	
+	public class comboBoxListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String opcao = (String) comboBox.getSelectedItem();			
+			int conta =	Integer.parseInt(opcao.substring(0,3).trim());
+			mostrarDados (conta);
+			btnSignup.setEnabled(false);
+			btnExcluir.setEnabled(true);
+			btnLogin.setEnabled(true);
+			btnDepositar.setEnabled(true);
+		}
+		
+	}
+	
+	public class btnExcluirListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String[]opcoes = {"Sim", "Nao"};
+//			Object linhaSelecionada;
+//			linhaSelecionada = comboBox.getSelectedItem();
+//			System.out.println(linhaSelecionada);
+			String numConta = (String) comboBox.getSelectedItem();			
+			int conta =	Integer.parseInt(numConta.substring(0,3).trim());
+			System.out.println(conta);
+					//table.getSelectedRow();
+//			if (linhaSelecionada >= 0) {
+			if (conta > 0) {
+//				int id_cliente = (int)comboBox.getValueAt
+						//table.getValueAt(linhaSelecionada, 0);
+				int opcao = JOptionPane.showOptionDialog(rootPane, "Deseja excluir este registro?","Confirmação",JOptionPane.YES_OPTION, JOptionPane.QUESTION_MESSAGE,null, opcoes, opcoes[1]);
+				if (JOptionPane.OK_OPTION == opcao) {
+				new ClienteDAO().excluir(conta);
+				FrmLista.atualizarGrade();
+				popularComboBox();
+				numConta = (String) comboBox.getSelectedItem();
+				conta =	Integer.parseInt(numConta.substring(0,3).trim());
+				mostrarDados(conta);
+				
+				}
+			}else {
+				JOptionPane.showMessageDialog(null, "Selecione um registro");
+			}
+			JOptionPane.showMessageDialog(null, "Registro excluido");
+			FrmLista.atualizarGrade();
+			setVisible(false);
+			dispose();
+		}
+		
+	}
+	public class btnSignupListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String opcao = null;
+			String nome = null;
+			nome = tfNome.getText();
+			if (!"".equals(nome)) {
+				cliente = new Cliente();			
+				cliente.setNome(tfNome.getText());
+				cliente.setSenha(tfSenha.getText());
+				cliente.setSaldo("0");
+				cliente.setCredito(Integer.toString(bonus.nextInt(30)*5000 + 50000));
+				boolean quatro = true;
+				while (quatro) {
+					if (tfSenha.getText().matches("[0-9]{4,4}")){
+						quatro = false;
+					}
+					else
+					{
+						opcao=(JOptionPane.showInputDialog("Digite uma senha de quatro números: "));
+						try {
+							if (opcao.length()==4) {
+								tfSenha.setText(opcao);
+								cliente.setSenha(tfSenha.getText());
+							}
+						} catch (Exception e1) {
+							System.out.println("Cancelou");
+							break;
+						}
+					}
+				}
+				if(!quatro) {
+					dao = new ClienteDAO();	
+					boolean resultado = dao.incluir(cliente);
+					if(resultado) {
+						JOptionPane.showMessageDialog(null, "O cliente foi cadastrado.");
+						FrmLista.atualizarGrade();
+					}
+					else 
+						JOptionPane.showMessageDialog(null, "Não foi possível fazer o cadastro!");
+				}
+				else 
+					JOptionPane.showMessageDialog(null, "Cadastro cancelado.");
+			}
+			setVisible(false);
+			dispose();
+		}		
+	}
+	public void mostrarDados (int id) {
+		cliente = new ClienteDAO().PesquisarPorId(id);
+		tfConta.setText(""+cliente.getId());
+		tfNome.setText(cliente.getNome());
+		
+	}
+	
+	public void popularComboBox() {
+		List<String> strList = new ArrayList<>();
+		strList = new ClienteDAO().popular();
+		DefaultComboBoxModel defaultComboBox = new DefaultComboBoxModel(strList.toArray());
+		comboBox.setModel(defaultComboBox);
+	}
+	
 }

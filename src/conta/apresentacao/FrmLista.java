@@ -9,8 +9,11 @@ import javax.swing.JScrollPane;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.util.List;
+import java.util.Random;
 import java.awt.Color;
 import java.awt.Cursor;
 
@@ -22,6 +25,8 @@ import conta.util.ModeloGrade;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 
 import javax.swing.DefaultComboBoxModel;
@@ -31,10 +36,12 @@ public class FrmLista extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	
-	private JTable table;
+	private static JTable table;
 	private JPanel pnTabela;
 	private JComboBox cbCampo;
 	private JTextField txtValor;
+	private static String cash = null;
+	Random bonus = new Random();
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -64,6 +71,7 @@ public class FrmLista extends JFrame {
 		tabela();
 		atualizarGrade();
 		populaCombo();
+		bonus();
 	}
 	public void janela() {
 		setTitle("Lista de clientes");
@@ -126,6 +134,7 @@ public class FrmLista extends JFrame {
 		btnEditar.setFont(new Font("Liberation Sans", Font.PLAIN, 15));
 		btnEditar.setBounds(35, 32, 105, 27);
 		pnBotoes.add(btnEditar);
+		btnEditar.addActionListener(new btnEditarListener());
 	}
 	public void tabela(){
 			table = new JTable(new ModeloGrade());
@@ -136,7 +145,7 @@ public class FrmLista extends JFrame {
 			JScrollPane rolagem = new JScrollPane(table);
 			pnTabela.add(rolagem);
 	}
-	public void atualizarGrade() {
+	public static void atualizarGrade() {
 		ResultSet rs = new ClienteDAO().carregarGrade();
 		table.setModel(new ModeloGrade(rs, new String[] {"Código","Nome"}));
 		table.getColumnModel().getColumn(0).setMaxWidth(60);
@@ -148,9 +157,48 @@ public class FrmLista extends JFrame {
 			dcm.addElement(campo);
 	}
 	
+	public void bonus() {
+		cash = Integer.toString(bonus.nextInt(30)*5000 + 50000);
+	}
+	
+	
+	public static String getCash() {
+		return cash;
+	}
+
+	public static void setCash(String cash) {
+		FrmLista.cash = cash;
+	}
+
 	public void pesquisa(String campo, String valor) {
 		ResultSet rs = new ClienteDAO().pesquisa(campo, valor);
 		table.setModel(new ModeloGrade(rs, new String[] {"Código","Nome"}));
 		table.getColumnModel().getColumn(0).setMaxWidth(50);
+	}
+	
+	public class btnEditarListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			//ContaCliente cli = new ContaCliente();
+			int linhaSelecionada = -1;
+			linhaSelecionada = table.getSelectedRow();
+			if (linhaSelecionada >= 0) {
+				int id_cliente = (int)table.getValueAt(linhaSelecionada, 0);
+				ContaCliente cli = new ContaCliente(id_cliente,linhaSelecionada);
+				cli.setVisible(true);
+			}
+			else {
+				ContaCliente cli = new ContaCliente();
+				cli.setVisible(true);
+			}
+//			cli.addWindowListener(new WindowAdapter() {
+//				public void windowClosed(WindowEvent e) {
+//					atualizarGrade();
+//				}
+//			});
+//			
+			
+		}
 	}
 }

@@ -20,7 +20,7 @@ public class ClienteDAO {
 		this.con = Conexao.getConexao();
 	}
 	
-	public void incluir(Cliente cliente) {
+	public boolean incluir(Cliente cliente) {
 		String sql = "INSERT INTO cliente (nome,saldo,credito,senha) value(?,?,?,?)";
 		try {
 			int i=0;
@@ -31,8 +31,10 @@ public class ClienteDAO {
 			stmt.setString(++i,cliente.getSenha());
 			stmt.execute();
 			con.close();
+			return true;
 		} catch (SQLException e) {
-		throw new RuntimeException(e);
+		//throw new RuntimeException(e);
+			return false;
 		}
 			
 	}
@@ -66,6 +68,55 @@ public class ClienteDAO {
 		}
 	}
 	
+	public List<String> popular() {
+		List<String> list = new ArrayList<String>();
+		try {
+		String sql = "SELECT id_cliente, nome FROM cliente";
+		stmt = con.prepareStatement(sql);
+		rs = stmt.executeQuery();
+			
+			while(rs.next()) {
+//				Cliente cliente = new Cliente();
+//				cliente.setId(rs.getInt(1));
+//				cliente.setNome(rs.getString(2));
+				String linha = rs.getString("id_cliente");
+				linha = linha + "  ";
+				linha = linha + rs.getString("nome");
+				list.add(linha);
+			}
+			
+				stmt.close();
+			
+			rs.close();
+			con.close();	
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return list;		
+	}
+	
+	public List<Cliente> listar2() {
+		List<Cliente> lst = new ArrayList<Cliente>();
+		
+		try {
+			stmt = con.prepareStatement("SELECT id_cliente, nome FROM cliente");
+			rs = stmt.executeQuery();
+			
+			while(rs.next()) {
+				Cliente cliente = new Cliente();
+				cliente.setId(rs.getInt(1));
+				cliente.setNome(rs.getString(2));
+				
+				lst.add(cliente);
+			}
+			stmt.close();
+			rs.close();
+			con.close();	
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return lst;		
+	}
 	public List<Cliente> listar() {
 		List<Cliente> lst = new ArrayList<Cliente>();
 		
