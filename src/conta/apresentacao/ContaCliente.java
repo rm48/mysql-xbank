@@ -48,6 +48,7 @@ public class ContaCliente extends JFrame {
 	private JButton btnSaldo;
 	
 	private JComboBox comboBox;
+	private JTextArea textArea;
 	
 	Cliente cliente;
 	ClienteDAO dao;
@@ -245,7 +246,7 @@ public ContaCliente(int id, int linha) {
 		
 		
 		
-		JTextArea textArea = new JTextArea();
+		textArea = new JTextArea();
 		textArea.setFont(fonte);
 		textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		textArea.setEditable(false);
@@ -285,15 +286,29 @@ public ContaCliente(int id, int linha) {
 		public void actionPerformed(ActionEvent e) {
 			String numConta = (String) comboBox.getSelectedItem();			
 			int conta =	Integer.parseInt(numConta.substring(0,3).trim());
-			if (conta > 0) {
+			//if (conta > 0) {
 			cliente = new ClienteDAO().PesquisarPorId(conta);
-			double valor = Double.parseDouble(tfValor.getText());
-			double saldo = Double.parseDouble(cliente.getSaldo());
-			saldo+=valor;
-			cliente.setSaldo(Double.toString(saldo));
-			}			
-			dao = new ClienteDAO();	
-			dao.depositar(cliente);
+			
+			if (!"".equals(tfValor.getText())) {
+				double valor = Double.parseDouble(tfValor.getText());
+				double cash = Double.parseDouble(FrmLista.getCash());
+				cash -=valor;
+				if (cash >=0) {
+					double saldo = Double.parseDouble(cliente.getSaldo());
+					saldo+=valor;
+					cliente.setSaldo(Double.toString(saldo));
+					FrmLista.setCash(Double.toString(cash));
+					dao = new ClienteDAO();	
+					dao.depositar(cliente);
+					textArea.setText("Cash: "+ FrmLista.getCash() );
+					JOptionPane.showMessageDialog(null, "Depositado");
+				}
+				else 
+					JOptionPane.showMessageDialog(null, "Digite um valor menor");
+			}
+			else
+				JOptionPane.showMessageDialog(null, "Digite um valor");
+			
 		}		
 	}
 	
@@ -304,7 +319,7 @@ public ContaCliente(int id, int linha) {
 			String[]opcoes = {"Sim", "Nao"};
 			String numConta = (String) comboBox.getSelectedItem();			
 			int conta =	Integer.parseInt(numConta.substring(0,3).trim());
-			if (conta > 0) {
+			//if (conta > 0) {
 //				int id_cliente = (int)comboBox.getValueAt
 						//table.getValueAt(linhaSelecionada, 0);
 				int opcao = JOptionPane.showOptionDialog(rootPane, "Deseja excluir este registro?","Confirmação",JOptionPane.YES_OPTION, JOptionPane.QUESTION_MESSAGE,null, opcoes, opcoes[1]);
@@ -317,9 +332,9 @@ public ContaCliente(int id, int linha) {
 				mostrarDados(conta);
 				
 				}
-			}else {
-				JOptionPane.showMessageDialog(null, "Selecione um registro");
-			}
+//			}else {
+//				JOptionPane.showMessageDialog(null, "Selecione um registro");
+//			}
 			JOptionPane.showMessageDialog(null, "Registro excluido");
 			FrmLista.atualizarGrade();
 			setVisible(false);
