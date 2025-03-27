@@ -225,6 +225,7 @@ public ContaCliente(int id, int linha) {
 		btnDepositar.setFont(fonte);
 		btnDepositar.setBounds(198, 174, 110, 24);
 		panel.add(btnDepositar);
+		btnDepositar.addActionListener(new btnDepositarListener());
 		
 		btnLogout = new JButton("Sair");
 		btnLogout.setFont(fonte);
@@ -263,6 +264,8 @@ public ContaCliente(int id, int linha) {
 		
 	}
 	
+	
+	
 	public class comboBoxListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -277,19 +280,30 @@ public ContaCliente(int id, int linha) {
 		
 	}
 	
+	public class btnDepositarListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String numConta = (String) comboBox.getSelectedItem();			
+			int conta =	Integer.parseInt(numConta.substring(0,3).trim());
+			if (conta > 0) {
+			cliente = new ClienteDAO().PesquisarPorId(conta);
+			double valor = Double.parseDouble(tfValor.getText());
+			double saldo = Double.parseDouble(cliente.getSaldo());
+			saldo+=valor;
+			cliente.setSaldo(Double.toString(saldo));
+			}			
+			dao = new ClienteDAO();	
+			dao.depositar(cliente);
+		}		
+	}
+	
 	public class btnExcluirListener implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String[]opcoes = {"Sim", "Nao"};
-//			Object linhaSelecionada;
-//			linhaSelecionada = comboBox.getSelectedItem();
-//			System.out.println(linhaSelecionada);
 			String numConta = (String) comboBox.getSelectedItem();			
 			int conta =	Integer.parseInt(numConta.substring(0,3).trim());
-			System.out.println(conta);
-					//table.getSelectedRow();
-//			if (linhaSelecionada >= 0) {
 			if (conta > 0) {
 //				int id_cliente = (int)comboBox.getValueAt
 						//table.getValueAt(linhaSelecionada, 0);

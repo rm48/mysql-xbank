@@ -138,7 +138,6 @@ public class FrmLista extends JFrame {
 	}
 	public void tabela(){
 			table = new JTable(new ModeloGrade());
-			//table.setForeground(Color.BLUE);
 			table.setFont(new Font("Liberation Sans", Font.PLAIN, 15));
 			table.setToolTipText("Clique em uma linha para selecionar");
 			table.setCursor(new Cursor(Cursor.HAND_CURSOR));

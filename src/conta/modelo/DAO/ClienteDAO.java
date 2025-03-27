@@ -56,6 +56,22 @@ public class ClienteDAO {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public void depositar (Cliente cliente) {
+		String sql = "UPDATE cliente SET saldo=? where id_cliente=?";
+		try {
+			int i=0;
+			stmt = con.prepareStatement(sql);	
+			stmt.setString(++i,cliente.getSaldo());
+			stmt.setInt(++i,cliente.getId());
+			stmt.execute();		
+			stmt.close();
+			con.close();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public void excluir (int id) {
 		try {
 			stmt = con.prepareStatement("DELETE FROM cliente WHERE id_Cliente=?");
