@@ -206,6 +206,7 @@ public ContaCliente(int id, int linha) {
 		btnTransferir.setFont(fonte);
 		btnTransferir.setBounds(181, 138, 99, 24);
 		panel.add(btnTransferir);
+		btnTransferir.addActionListener(new btnTransferirListener());
 		
 		btnSacar = new JButton("Sacar");
 		btnSacar.setFont(fonte);
@@ -288,10 +289,10 @@ public ContaCliente(int id, int linha) {
 							+"\nSaldo: " +saldo
 							+"\nCrédito: "+ credito+ "\tTotal: " + total
 							+"\nCliente: "+ clienteLogado.getNome()+"\tConta: "+ clienteLogado.getId());			
+				} else
+					JOptionPane.showMessageDialog(null, "Saldo insuficiente");			
 			} else
-				JOptionPane.showMessageDialog(null, "Saldo insuficiente");			
-		} else
-			JOptionPane.showMessageDialog(null, "Digite um valor");
+				JOptionPane.showMessageDialog(null, "Digite um valor");
 		}	
 	}
 	
@@ -333,6 +334,46 @@ public ContaCliente(int id, int linha) {
 			else
 				JOptionPane.showMessageDialog(null, "Digite um valor");		
 		}		
+	}
+	
+	public class btnTransferirListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			String numConta = (String) comboBox.getSelectedItem();
+			int contaDestino = Integer.parseInt(numConta.substring(0, 3).trim());
+			Cliente favorecido = new ClienteDAO().PesquisarPorId(contaDestino);
+			double cash = Double.parseDouble(FrmLista.getCash());
+			double total;
+			double saldo = Double.parseDouble(clienteLogado.getSaldo());
+			double credito = Double.parseDouble(clienteLogado.getCredito());
+			if (contaDestino != clienteLogado.getId()) {
+				if (!"".equals(tfValor.getText())) {
+					double valor = Double.parseDouble(tfValor.getText());
+					if ((saldo + credito) >= valor) {
+						saldo -= valor;
+						clienteLogado.setSaldo(Double.toString(saldo));
+						dao = new ClienteDAO();
+						dao.alterar(clienteLogado);
+						total = saldo + credito + cash;
+						textArea.setText("Cash: " + cash
+								+ "\nSaldo: " + saldo
+								+ "\nCrédito: " + credito + "\tTotal: "	+ total 
+								+ "\nCliente: " + clienteLogado.getNome() + "\tConta: "	+ clienteLogado.getId());
+						double saldoDestino = Double.parseDouble(favorecido.getSaldo());
+						saldoDestino += valor;
+						favorecido.setSaldo(Double.toString(saldoDestino));
+						dao = new ClienteDAO();
+						dao.alterar(favorecido);
+						JOptionPane.showMessageDialog(null, "Depositado na conta: " + favorecido.getNome());
+					} else
+						JOptionPane.showMessageDialog(null, "Saldo insuficiente");
+				} else
+					JOptionPane.showMessageDialog(null, "Digite um valor");
+			} else
+				JOptionPane.showMessageDialog(null, "Selecion a conta destino");
+
+		}
+
 	}
 	
 	public class btnExcluirListener implements ActionListener{
@@ -399,7 +440,6 @@ public ContaCliente(int id, int linha) {
 			btnTransferir.setEnabled(false);
 			btnSacar.setEnabled(false);
 			btnFechar.setEnabled(false);
-			System.out.println(cliente);
 			logado = false;
 			textArea.setText("Cash: "+ FrmLista.getCash());
 			JOptionPane.showMessageDialog(null, "Saiu.");			
@@ -458,7 +498,6 @@ public ContaCliente(int id, int linha) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			cliente = null;
-			System.out.println(cliente);
 			logado = false;
 			setVisible(false);
 			dispose();			
@@ -469,7 +508,6 @@ public ContaCliente(int id, int linha) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			cliente = null;
-			System.out.println(cliente);
 			logado = false;
 			setVisible(false);
 			dispose();			
