@@ -33,14 +33,14 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 
 public class FrmLista extends JFrame {
-
 	private static final long serialVersionUID = 1L;
-	
 	private static JTable table;
 	private JPanel pnTabela;
 	private JComboBox cbCampo;
 	private JTextField txtValor;
 	private static String cash = null;
+	private static ContaCliente objAtm;
+	private static boolean objAtmOn=false;
 	Random bonus = new Random();
 
 	public static void main(String[] args) {
@@ -108,12 +108,7 @@ public class FrmLista extends JFrame {
 		panel.add(lblValor);
 		
 		JButton btnPesquisar = new JButton("Pesquisar");
-		btnPesquisar.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				pesquisa(""+cbCampo.getSelectedItem(), txtValor.getText());				
-			}
-			});
+		btnPesquisar.addActionListener(new btnPesquisarListener());
 			
 		btnPesquisar.setFont(new Font("Liberation Sans", Font.PLAIN, 15));
 		btnPesquisar.setBounds(445, 27, 105, 27);
@@ -123,8 +118,7 @@ public class FrmLista extends JFrame {
 		pnTabela.setBounds(12, 88, 653, 252);
 		getContentPane().add(pnTabela);
 		pnTabela.setLayout(new GridLayout(1, 0, 0, 0));
-		
-		
+				
 		JPanel pnBotoes = new JPanel();
 		pnBotoes.setBounds(12, 352, 653, 91);
 		getContentPane().add(pnBotoes);
@@ -136,6 +130,19 @@ public class FrmLista extends JFrame {
 		pnBotoes.add(btnEditar);
 		btnEditar.addActionListener(new btnEditarListener());
 	}
+	
+	public void bonus() {
+		cash = Integer.toString(bonus.nextInt(30)*5000 + 50000);
+	}	
+	
+	public static String getCash() {
+		return cash;
+	}
+
+	public static void setCash(String cash) {
+		FrmLista.cash = cash;
+	}
+	
 	public void tabela(){
 			table = new JTable(new ModeloGrade());
 			table.setFont(new Font("Liberation Sans", Font.PLAIN, 15));
@@ -156,48 +163,35 @@ public class FrmLista extends JFrame {
 			dcm.addElement(campo);
 	}
 	
-	public void bonus() {
-		cash = Integer.toString(bonus.nextInt(30)*5000 + 50000);
-	}
-	
-	
-	public static String getCash() {
-		return cash;
-	}
-
-	public static void setCash(String cash) {
-		FrmLista.cash = cash;
-	}
-
 	public void pesquisa(String campo, String valor) {
 		ResultSet rs = new ClienteDAO().pesquisa(campo, valor);
 		table.setModel(new ModeloGrade(rs, new String[] {"Código","Nome"}));
 		table.getColumnModel().getColumn(0).setMaxWidth(50);
 	}
+
+	public class btnPesquisarListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			pesquisa(""+cbCampo.getSelectedItem(), txtValor.getText());			
+		}	
+	}
 	
 	public class btnEditarListener implements ActionListener{
-
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			//ContaCliente cli = new ContaCliente();
+			if (objAtmOn)
+				objAtm.dispose();
 			int linhaSelecionada = -1;
 			linhaSelecionada = table.getSelectedRow();
 			if (linhaSelecionada >= 0) {
 				int id_cliente = (int)table.getValueAt(linhaSelecionada, 0);
-				ContaCliente cli = new ContaCliente(id_cliente,linhaSelecionada);
-				cli.setVisible(true);
+				objAtm = new ContaCliente(id_cliente,linhaSelecionada);			
 			}
 			else {
-				ContaCliente cli = new ContaCliente();
-				cli.setVisible(true);
+				objAtm = new ContaCliente();
 			}
-//			cli.addWindowListener(new WindowAdapter() {
-//				public void windowClosed(WindowEvent e) {
-//					atualizarGrade();
-//				}
-//			});
-//			
-			
+			objAtm.setVisible(true);
+			objAtmOn = true;
 		}
 	}
 }
