@@ -18,6 +18,8 @@ import java.awt.Color;
 import java.awt.Cursor;
 
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.plaf.FontUIResource;
 
 import conta.modelo.DAO.ClienteDAO;
 import conta.util.ModeloGrade;
@@ -46,13 +48,20 @@ public class FrmLista extends JFrame {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {				
-					for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-						if ("Nimbus".equals(info.getName())) {
-							javax.swing.UIManager.setLookAndFeel(info.getClassName());
-							break;
-						}
-					}
+//				try {				
+//					for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//						if ("Nimbus".equals(info.getName())) {
+//							javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//							break;
+//						}
+//					}
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+				try {
+					UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
+					UIManager.put("OptionPane.messageFont", new FontUIResource(new Font("Liberation Sans", Font.PLAIN, 15)));
+					//https://javaaberto.blogspot.com/2012/08/joptionpane-personalizado.html
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
