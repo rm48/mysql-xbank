@@ -30,9 +30,12 @@ public class TelaJogo extends JFrame implements ActionListener {
     int palpite = 0,bola = 0;
     int[] numerosMega, acertos, sorteados;
     private boolean proxConc = false;   
-    Random random = new Random();
-    private final Icon[] bluenIcons, blueIcons ,redIcons, goldIcons;
-    private final JButton posicoesFiguras[];
+    private Random random = new Random();
+    private Icon[] bluenIcons;
+	private Icon[] blueIcons; 
+	private Icon[] redIcons;
+	private Icon[] goldIcons;
+    private JButton btnNumeros[];
     
     private JButton btnApostar;
     private JButton btnLimpar;
@@ -57,7 +60,6 @@ public class TelaJogo extends JFrame implements ActionListener {
 				try {
 					UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
 					UIManager.put("OptionPane.messageFont", new FontUIResource(new Font("Liberation Sans", Font.PLAIN, 15)));
-					//https://javaaberto.blogspot.com/2012/08/joptionpane-personalizado.html
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -76,27 +78,7 @@ public class TelaJogo extends JFrame implements ActionListener {
 	 */
 	public TelaJogo() {
 		Janela();
-		acertos = new int[apostaMinima];
-        sorteados = new int[apostaMinima];           
-        numerosMega = new int[range];
-        bluenIcons = new Icon[range];
-        blueIcons  = new Icon[range];
-        redIcons = new Icon[range];
-        goldIcons = new Icon[range];
-		posicoesFiguras = new JButton[range];
-		for (int i = 0; i < range; i++) {
-			blueIcons[ i ] = new ImageIcon(getClass().getResource("/conta/img/blue/"+ ( i + 1 ) + ".gif"));
-	        bluenIcons [ i ] = new ImageIcon(getClass().getResource( "/conta/img/bluen/"+ ( i + 1 ) + ".gif"));
-	        redIcons [ i ] = new ImageIcon(getClass().getResource( "/conta/img/red/"+ ( i + 1 ) + ".gif"));
-	        goldIcons [ i ] = new ImageIcon(getClass().getResource( "/conta/img/gold/"+ ( i + 1 ) + ".gif"));
-	        this.posicoesFiguras[ i ] = new JButton();
-	        this.posicoesFiguras[ i ].setName(Integer.toString( i ));
-	        posicoesFiguras[ i ].setIcon(bluenIcons[ i ]); 
-	        posicoesFiguras[ i ].setActionCommand(posicoesFiguras[ i ].getName());                          
-	       //Sem isto também os numeros nao respondem
-	        posicoesFiguras[ i ].addActionListener(this);
-	        pnNumeros.add( posicoesFiguras[ i ] );
-		}
+		
 		
 	}
 	public void Janela() {
@@ -106,12 +88,9 @@ public class TelaJogo extends JFrame implements ActionListener {
 		setBounds(100, 100, 732, 561);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		//contentPane.setFont(fonte);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
-		
-		
+				
 		pnBotoes = new JPanel();
 		pnBotoes.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		pnBotoes.setBounds(12, 12, 709, 76);
@@ -124,7 +103,6 @@ public class TelaJogo extends JFrame implements ActionListener {
 		btnApostar.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-			//actionPerformed(e);
 				apostar();
 			}
 		});
@@ -172,8 +150,28 @@ public class TelaJogo extends JFrame implements ActionListener {
 		pnNumeros.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		pnNumeros.setBounds(12, 100, 709, 421);
 		contentPane.add(pnNumeros);
-		//pnNumeros.setLayout(new GridLayout(1, 0, 0, 0));
-		pnNumeros.setLayout(new GridLayout(6,10));    
+		pnNumeros.setLayout(new GridLayout(6,10)); 
+
+		acertos = new int[apostaMinima];
+        sorteados = new int[apostaMinima];           
+        numerosMega = new int[range];
+        bluenIcons = new Icon[range];
+        blueIcons  = new Icon[range];
+        redIcons = new Icon[range];
+        goldIcons = new Icon[range];
+		btnNumeros = new JButton[range];
+		for (int i = 0; i < range; i++) {
+			blueIcons[ i ] = new ImageIcon(getClass().getResource("/conta/img/blue/"+ ( i + 1 ) + ".gif"));
+	        bluenIcons [ i ] = new ImageIcon(getClass().getResource( "/conta/img/bluen/"+ ( i + 1 ) + ".gif"));
+	        redIcons [ i ] = new ImageIcon(getClass().getResource( "/conta/img/red/"+ ( i + 1 ) + ".gif"));
+	        goldIcons [ i ] = new ImageIcon(getClass().getResource( "/conta/img/gold/"+ ( i + 1 ) + ".gif"));
+	        this.btnNumeros[ i ] = new JButton();
+	        this.btnNumeros[ i ].setName(Integer.toString( i ));
+	        btnNumeros[ i ].setIcon(bluenIcons[ i ]); 
+	        btnNumeros[ i ].setActionCommand(btnNumeros[ i ].getName());                          
+	        btnNumeros[ i ].addActionListener(this);
+	        pnNumeros.add( btnNumeros[ i ] );
+		}
 		
 	}
 	private void apostar() {		
@@ -188,12 +186,12 @@ public class TelaJogo extends JFrame implements ActionListener {
                 } while (numerosMega[bola] % 2 == 1);
                 if (numerosMega[bola] == 2) {
                     numerosMega[bola] = 3;
-                    acertos[contaAcertos] = bola + 1; //Put on acertos                               
+                    acertos[contaAcertos] = bola + 1;                      
                     contaAcertos++;
                 } else {
-                    numerosMega[bola] = 1; // Here the position is marked with 1 (alread drawn)
+                    numerosMega[bola] = 1;
                 }
-                sorteados[i] = bola + 1; //Put on sorteados 
+                sorteados[i] = bola + 1;
                  }
             pintar();
             }		
@@ -204,7 +202,7 @@ public class TelaJogo extends JFrame implements ActionListener {
 	        if(!proxConc){
 //	          reset
 	                    if (numerosMega[i] == 2) {
-	                        posicoesFiguras[i].setIcon(bluenIcons[i]);
+	                        btnNumeros[i].setIcon(bluenIcons[i]);
 	                        numerosMega[i] = 0;
 	                        palpite--;
 	                    }
@@ -212,7 +210,7 @@ public class TelaJogo extends JFrame implements ActionListener {
 	                        JOptionPane.showMessageDialog(pnNumeros, "Atingiu aposta máxima.");
 //	          aposta
 	                    else {   
-	                       posicoesFiguras[i].setIcon(blueIcons[i]);
+	                       btnNumeros[i].setIcon(blueIcons[i]);
 	                        numerosMega[i] = 2;
 	                        palpite++;                
 	                    }
@@ -228,16 +226,16 @@ public class TelaJogo extends JFrame implements ActionListener {
 			if(!proxConc){
 		         pnNumeros.setBackground(Color.lightGray);
 		        for (int i = 0; i < numerosMega.length; i++) {                           
-		                            if (numerosMega[i] == 2) {//apostou
-		                                numerosMega[i] = 0;//reseta a posicao
-		                            } else if (numerosMega[i] == 3) {//acertou
-		                                posicoesFiguras[i].setIcon(goldIcons[i]);
+		                            if (numerosMega[i] == 2) {
+		                                numerosMega[i] = 0;
+		                            } else if (numerosMega[i] == 3) {
+		                                btnNumeros[i].setIcon(goldIcons[i]);
 		                                numerosMega[i] = 0;                                                            
-		                            } else if (numerosMega[i] == 1) {//errou
-		                                posicoesFiguras[i].setIcon(redIcons[i]);
+		                            } else if (numerosMega[i] == 1) {
+		                                btnNumeros[i].setIcon(redIcons[i]);
 		                                numerosMega[i] = 0;     
-		                            } else {//desativa demais icones
-		                                posicoesFiguras[i].setEnabled(false);
+		                            } else {
+		                                btnNumeros[i].setEnabled(false);
 		                            }
 		                        }
 		        proxConc = true;
@@ -253,8 +251,8 @@ public class TelaJogo extends JFrame implements ActionListener {
 			 pnNumeros.setBackground(Color.darkGray);
              for (int i = 0; i < numerosMega.length; i++) {
             	 numerosMega[i] = 0;
-            	 posicoesFiguras[i].setIcon(bluenIcons[i]);
-            	 posicoesFiguras[i].setEnabled(true);
+            	 btnNumeros[i].setIcon(bluenIcons[i]);
+            	 btnNumeros[i].setEnabled(true);
              }         
              palpite = 0;
              proxConc = false;		
@@ -278,11 +276,6 @@ public class TelaJogo extends JFrame implements ActionListener {
 	        		"\t    \t    \t    x-Bank-quina-4.0 - 03/2025 \n\t    \t    \t    reinaldo589@hotmail.com","Probabilidades",1);        		    
 	   }
 
-		/**
-		 * public class TelaJogo extends JFrame implements ActionListener {
-		 * Tela jogo pediu pra implementar este metodo
-		 * ele que faz os icones de numeros responder
-		 */
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			int i=Integer.parseInt(e.getActionCommand());        
